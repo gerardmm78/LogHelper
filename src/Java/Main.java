@@ -32,7 +32,6 @@ public class Main {
                 ASALogLoader asa = new ASALogLoader();
                 asa.load(new File(file));
                 asa.ShowList();
-                //asa.check(new File(file));
 
             } else if (file.equals("0")){
 

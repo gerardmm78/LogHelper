@@ -3,6 +3,7 @@ package Java;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -86,10 +87,15 @@ public class ASALogLoader extends LogLoader {
 
     }
 
-    public void ShowList(){
+    public void ShowList() throws SQLException{
 
         System.out.println("Línies correctes: " + log.size());
         showErrorList();
+
+        ASALogDAO logdao = new ASALogDAO();
+        logdao.createTable();
+        logdao.insertData(log);
+
         //for (int i = 0; i < log.size(); i++){
 //
         //    System.out.println(log.get(i).getName());
