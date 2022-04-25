@@ -6,6 +6,8 @@ echo "Installing and configuring mariadb"
 apt-get update
 apt-get install mariadb-server -y
 
+ifconfig -a
+
 sudo systemctl enable mariadb
 sudo systemctl start mariadb
 
@@ -20,9 +22,13 @@ sudo mysql -e "DROP DATABASE IF EXISTS test"
 echo "Creant base de dades..."
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS loghelperdb"
 
-echo "Creant usuari..."
-sudo mysql -e "CREATE USER 'loghelper'@localhost IDENTIFIED BY '1234'"
+echo "Configuració de mariadb"
+cp /vagrant/50-server.cnf /etc/mysql/mariadb.conf.d
 
-echo "Donant permisos a usuari..."
-sudo mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'loghelper'@localhost IDENTIFIED BY '1234'"
-sudo mysql -e "FLUSH PRIVILEGES"
+echo "Creant usuari i donant permisos"
+mysql << EOF
+CREATE OR REPLACE USER loghelper@'%' IDENTIFIED BY '1234';
+GRANT ALL ON *.* TO loghelper@'%';
+EOF
+
+systemctl restart mariadb
