@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -11,8 +12,8 @@ public class Main {
     public static void main (String[] args) throws Exception{
         Scanner in = new Scanner(System.in);
 
-        String line = "";
-        String splitBy = ",";
+        //String line = "";
+        //String splitBy = ",";
 
         String file = null;
         BufferedReader br = null;
@@ -28,8 +29,10 @@ public class Main {
             //Si el fitxer passat és CSV, guardarem les dades en el BufferReader
             if (file.endsWith(".csv")){
 
-                //I aquí guardarem el BufferReader que ens permitirà llegir i manipular el document
-                br = new BufferedReader(new FileReader(file));
+                ASALogLoader asa = new ASALogLoader();
+                asa.load(new File(file));
+                asa.ShowList();
+                //asa.check(new File(file));
 
             } else if (file.equals("0")){
 
@@ -42,29 +45,6 @@ public class Main {
                 System.out.println("Fitxer no compatible. Torna a intentar-ho");
                 file = null;
 
-            }
-
-        }
-
-        while ((line = br.readLine()) != null){
-
-            String cisco[] = line.split(splitBy);
-
-            //Ja que en alguna fila pot faltar algun camp o hi poden haver missatges amb comes, ens saltem tals files
-            //amb menys de 19 camps, perquè així no donarà cap error
-            if (cisco.length >= 19){
-
-                System.out.println(
-                        "Name :" + cisco[5] +
-                                "\nStart: " + cisco[6] +
-                                "\nMsg: " + cisco[9] +
-                                "\nSuser: " + cisco[10] +
-                                "\nSrc: " + cisco[11] +
-                                "\nSpt: " + cisco[12] +
-                                "\nDst: " + cisco[14] +
-                                "\nDpt: " + cisco[15] +
-                                "\nProto: " + cisco[17] + "\n"
-                );
             }
 
         }
