@@ -1,6 +1,7 @@
 package Java;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ASALogDAO implements LogDAO {
@@ -61,7 +62,8 @@ public class ASALogDAO implements LogDAO {
     //List: ASALogData
     public void insertData(List data) {
 
-
+        //List<ASALogData> log = data;
+        System.out.println(data.get(150));
 
     }
 

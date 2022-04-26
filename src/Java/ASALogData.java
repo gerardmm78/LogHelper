@@ -46,6 +46,10 @@ public class ASALogData implements LogData{
         this.proto = proto;
     }
 
+    public void getAll(){
+        System.out.println(this.name + ", " + this.start + ", " + this.msg + ", " + this.suser + ", " + this.src + ", " + this.spt+ ", " + this.dst + ", " + this.dpt + ", " + this.proto);
+    }
+
     public String getName() {
         return name;
     }
@@ -116,5 +120,20 @@ public class ASALogData implements LogData{
 
     public void setProto(String proto) {
         this.proto = proto;
+    }
+
+    @Override
+    public String toString() {
+        return "ASALogData{" +
+                "name='" + name + '\'' +
+                ", start=" + start +
+                ", msg='" + msg + '\'' +
+                ", suser='" + suser + '\'' +
+                ", src='" + src + '\'' +
+                ", spt=" + spt +
+                ", dst='" + dst + '\'' +
+                ", dpt=" + dpt +
+                ", proto='" + proto + '\'' +
+                '}';
     }
 }
