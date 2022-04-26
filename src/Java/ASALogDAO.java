@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ASALogDAO implements LogDAO {
+public class ASALogDAO extends LogDAO {
 
     Connection connection;
 
@@ -21,7 +21,7 @@ public class ASALogDAO implements LogDAO {
     public void createTable() throws SQLException {
 
         String ASATable = "ASALogData";
-        String ErrorTable = "LoadError";
+        String ErrorTable = "DAOError";
 
         //Mirar si hi ha una taula on emmagatzemar la llista Asa log, per sinó crear-la
         if (!tableExists(connection, ASATable)){
@@ -68,31 +68,55 @@ public class ASALogDAO implements LogDAO {
     }
 
     @Override
-    //List: ASALogData
-    public void insertData(List data) throws SQLException {
+    @SuppressWarnings({"unchecked", "deprecated"})
+    public void insertData(List data){
 
         List<ASALogData> AsaData = data;
 
         for (int i = 0; i < AsaData.size(); i++){
 
-            //Ja que hi ha camps els quals fan servir l'apòstrof, l'eliminem perquè no hi hagi errors
-            String name = AsaData.get(i).getName().replace("'", "");
-            String msg = AsaData.get(i).getMsg().replace("'", "");
-            String suser = AsaData.get(i).getSuser().replace("'", " ");
-            String src = AsaData.get(i).getSrc().replace("'", "");
-            String dst = AsaData.get(i).getDst().replace("'", "");
-
             //Fem la comanda d'inserir valors en la Taula ASALogData de la base de dades
             String insert =
                     "INSERT ASALogData (name, start, msg, suser, src, spt, dst, dpt, proto)" +
-                    " VALUES('" + name + "', '" + AsaData.get(i).getStart()
-                    + "', '" + msg + "', '" + suser + "', '" + src
-                    + "', '" + AsaData.get(i).getSpt() + "', '" + dst + "', '" + AsaData.get(i).getDpt()
+                    " VALUES('" + AsaData.get(i).getName() + "', '" + AsaData.get(i).getStart()
+                    + "', '" + AsaData.get(i).getMsg() + "', '" + AsaData.get(i).getSuser() + "', '" + AsaData.get(i).getSrc()
+                    + "', '" + AsaData.get(i).getSpt() + "', '" + AsaData.get(i).getDst() + "', '" + AsaData.get(i).getDpt()
                     + "', '" + AsaData.get(i).getProto() + "');"
                     ;
 
-            Statement statement = connection.createStatement();
-            statement.execute(insert);
+            Statement statement = null;
+
+            try {
+
+                statement = connection.createStatement();
+                statement.execute(insert);
+
+            } catch (SQLException e) {
+
+                addErrorDao(i, AsaData.get(i).toString());
+
+            }
+
+        }
+
+        List<DAOError> newerr = errors;
+
+        for (int i = 0; i < newerr.size(); i++){
+
+            String line = newerr.get(i).getLine().replace("'", "");
+
+            //Fem la comanda d'inserir valors en la Taula DAOError de la base de dades
+            String insert =
+                    "INSERT DAOError (numRow, line) VALUES('" + newerr.get(i).getLineNum() + "', '" + line + "');";
+
+            Statement statement = null;
+
+            try {
+                statement = connection.createStatement();
+                statement.execute(insert);
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
 
         }
 

@@ -123,18 +123,7 @@ public class ASALogData implements LogData{
     }
 
     @Override
-    public String toString() {
-        return "ASALogData{" +
-                "name='" + name + '\'' +
-                ", start=" + start +
-                ", msg='" + msg + '\'' +
-                ", suser='" + suser + '\'' +
-                ", src='" + src + '\'' +
-                ", spt=" + spt +
-                ", dst='" + dst + '\'' +
-                ", dpt=" + dpt +
-                ", proto='" + proto + '\'' +
-                '}';
-
+    public String toString(){
+        return name + ", " + start + ", " + msg + ", " + suser + ", " + src + ", " + spt + ", " + dst + ", " + dpt + ", " + proto;
     }
 }

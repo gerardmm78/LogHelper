@@ -20,4 +20,8 @@ abstract class LogLoader <T>{
         System.out.println("Línies amb errors: " + errors.size());
     }
 
+    public List<LoadError> getErrors(){
+        return errors;
+    }
+
 }
