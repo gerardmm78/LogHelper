@@ -1,18 +1,27 @@
 package Java;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ASALogDAO implements LogDAO {
 
+    Connection connection;
+
+    {
+        try {
+            connection = DriverManager.getConnection("jdbc:mariadb://172.16.0.100:3306/loghelperdb", "loghelper", "1234");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void createTable() throws SQLException {
 
-        Connection connection = DriverManager.getConnection("jdbc:mariadb://172.16.0.100:3306/loghelperdb", "loghelper", "1234");
-
-        String ASATable = "asa";
-        String ErrorTable = "error";
+        String ASATable = "ASALogData";
+        String ErrorTable = "LoadError";
 
         //Mirar si hi ha una taula on emmagatzemar la llista Asa log, per sinó crear-la
         if (!tableExists(connection, ASATable)){
@@ -20,13 +29,13 @@ public class ASALogDAO implements LogDAO {
             String newTable =
                     "CREATE TABLE " + ASATable + " ("
                     + "idLog INT(64) NOT NULL AUTO_INCREMENT,"
-                    + "name VARCHAR(100) NOT NULL,"
+                    + "name TEXT NOT NULL,"
                     + "start DATETIME NOT NULL,"
-                    + "msg VARCHAR(200) NOT NULL,"
+                    + "msg TEXT NOT NULL,"
                     + "suser VARCHAR(100) NOT NULL,"
-                    + "src VARCHAR(200) NOT NULL,"
+                    + "src TEXT NOT NULL,"
                     + "spt INT(100) NOT NULL,"
-                    + "dst VARCHAR(200) NOT NULL,"
+                    + "dst TEXT NOT NULL,"
                     + "dpt INT(100) NOT NULL,"
                     + "proto VARCHAR(10) NOT NULL,"
                     + "PRIMARY KEY(idLog))";
@@ -60,10 +69,34 @@ public class ASALogDAO implements LogDAO {
 
     @Override
     //List: ASALogData
-    public void insertData(List data) {
+    public void insertData(List data) throws SQLException {
 
-        //List<ASALogData> log = data;
-        System.out.println(data.get(150));
+        List<ASALogData> AsaData = data;
+
+        for (int i = 0; i < AsaData.size(); i++){
+
+            //Ja que hi ha camps els quals fan servir l'apòstrof, l'eliminem perquè no hi hagi errors
+            String name = AsaData.get(i).getName().replace("'", "");
+            String msg = AsaData.get(i).getMsg().replace("'", "");
+            String suser = AsaData.get(i).getSuser().replace("'", " ");
+            String src = AsaData.get(i).getSrc().replace("'", "");
+            String dst = AsaData.get(i).getDst().replace("'", "");
+
+            //Fem la comanda d'inserir valors en la Taula ASALogData de la base de dades
+            String insert =
+                    "INSERT ASALogData (name, start, msg, suser, src, spt, dst, dpt, proto)" +
+                    " VALUES('" + name + "', '" + AsaData.get(i).getStart()
+                    + "', '" + msg + "', '" + suser + "', '" + src
+                    + "', '" + AsaData.get(i).getSpt() + "', '" + dst + "', '" + AsaData.get(i).getDpt()
+                    + "', '" + AsaData.get(i).getProto() + "');"
+                    ;
+
+            Statement statement = connection.createStatement();
+            statement.execute(insert);
+
+        }
+
+        System.out.println("Logs created in the database");
 
     }
 

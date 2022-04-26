@@ -135,5 +135,6 @@ public class ASALogData implements LogData{
                 ", dpt=" + dpt +
                 ", proto='" + proto + '\'' +
                 '}';
+
     }
 }

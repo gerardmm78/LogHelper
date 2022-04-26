@@ -96,12 +96,6 @@ public class ASALogLoader extends LogLoader {
         logdao.createTable();
         logdao.insertData(log);
 
-        //for (int i = 0; i < log.size(); i++){
-//
-        //    System.out.println(log.get(i).getName());
-//
-        //}
-
     }
 
     public void data(File logFile) throws Exception {
