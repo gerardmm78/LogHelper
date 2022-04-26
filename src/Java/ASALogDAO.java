@@ -29,15 +29,15 @@ public class ASALogDAO extends LogDAO {
             String newTable =
                     "CREATE TABLE " + ASATable + " ("
                     + "idLog INT(64) NOT NULL AUTO_INCREMENT,"
-                    + "name TEXT NOT NULL,"
+                    + "name VARCHAR(300) NOT NULL,"
                     + "start DATETIME NOT NULL,"
-                    + "msg TEXT NOT NULL,"
+                    + "msg VARCHAR(500) NOT NULL,"
                     + "suser VARCHAR(100) NOT NULL,"
-                    + "src TEXT NOT NULL,"
-                    + "spt INT(100) NOT NULL,"
-                    + "dst TEXT NOT NULL,"
-                    + "dpt INT(100) NOT NULL,"
-                    + "proto VARCHAR(10) NOT NULL,"
+                    + "src VARCHAR(40) NOT NULL,"
+                    + "spt INT(7) NOT NULL,"
+                    + "dst VARCHAR(15) NOT NULL,"
+                    + "dpt INT(7) NOT NULL,"
+                    + "proto VARCHAR(5) NOT NULL,"
                     + "PRIMARY KEY(idLog))";
 
             Statement statement = connection.createStatement();
@@ -75,25 +75,58 @@ public class ASALogDAO extends LogDAO {
 
         for (int i = 0; i < AsaData.size(); i++){
 
-            //Fem la comanda d'inserir valors en la Taula ASALogData de la base de dades
-            String insert =
-                    "INSERT ASALogData (name, start, msg, suser, src, spt, dst, dpt, proto)" +
-                    " VALUES('" + AsaData.get(i).getName() + "', '" + AsaData.get(i).getStart()
-                    + "', '" + AsaData.get(i).getMsg() + "', '" + AsaData.get(i).getSuser() + "', '" + AsaData.get(i).getSrc()
-                    + "', '" + AsaData.get(i).getSpt() + "', '" + AsaData.get(i).getDst() + "', '" + AsaData.get(i).getDpt()
-                    + "', '" + AsaData.get(i).getProto() + "');"
-                    ;
+            //Filtrem les dades per tal de veure que no se sobresurtin del camp i ens donin error
+            if (AsaData.get(i).getName().length() > 300 || AsaData.get(i).getMsg().length() > 500 || AsaData.get(i).getSuser().length() > 100
+            || AsaData.get(i).getSrc().length() > 40 || AsaData.get(i).getDst().length() > 15 || AsaData.get(i).getProto().length() > 5) {
 
-            Statement statement = null;
-
-            try {
-
-                statement = connection.createStatement();
-                statement.execute(insert);
-
-            } catch (SQLException e) {
-
+                //Si no és correcte algun camp, enviarem el log a la llista d'errors
                 addErrorDao(i, AsaData.get(i).toString());
+
+            //Si està tot correcte, es farà la inserció correctament a la taula ASA
+            } else {
+
+                String insert =
+                        "INSERT INTO ASALogData (" +
+                                "name, " +
+                                "start, " +
+                                "msg, " +
+                                "suser, " +
+                                "src, " +
+                                "spt, " +
+                                "dst, " +
+                                "dpt, " +
+                                "proto)" +
+                                "VALUES (" +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?, " +
+                                "?) ";
+
+                PreparedStatement pstmt = null;
+
+                try {
+                    pstmt = connection.prepareStatement(insert);
+
+                    pstmt.setString(1, AsaData.get(i).getName());
+                    pstmt.setString(2, AsaData.get(i).getStart().toString());
+                    pstmt.setString(3, AsaData.get(i).getMsg());
+                    pstmt.setString(4, AsaData.get(i).getSuser());
+                    pstmt.setString(5, AsaData.get(i).getSrc());
+                    pstmt.setString(6, String.valueOf(AsaData.get(i).getSpt()));
+                    pstmt.setString(7, AsaData.get(i).getDst());
+                    pstmt.setString(8, String.valueOf(AsaData.get(i).getDpt()));
+                    pstmt.setString(9, AsaData.get(i).getProto());
+
+                    pstmt.executeUpdate();
+                    pstmt.close();
+
+                } catch (Exception ignore){
+                }
 
             }
 

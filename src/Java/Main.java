@@ -12,35 +12,42 @@ public class Main {
     public static void main (String[] args) throws Exception{
         Scanner in = new Scanner(System.in);
 
-        //String line = "";
-        //String splitBy = ",";
+        System.out.println("Prem 1 per a emmagatzemar dades");
+        System.out.println("Prem 0 per a tancar l'aplicació");
+        System.out.println("--------------------------------");
+        System.out.println();
+        int num;
+
+        do {
+            num = in.nextInt();
+
+            if (num == 1) setData();
+            else if (num == 0) Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
+
+        } while (num != 0);
+
+    }
+
+    public static void setData() throws Exception{
+        Scanner in = new Scanner(System.in);
 
         String file = null;
-        BufferedReader br = null;
+        File ciscoFile = null;
 
-        System.out.print("Passa la ruta absoluta del fitxer CSV: ");
+        System.out.print("A continuació insereix el fitxer a emmagatzemar: ");
 
         while (file == null){
 
-            //El que fem aquí és donar el fitxer que volem guardar els elements, perquè sigui de manera dinàmica i no estàtica
-            //Haurem de passar el "Path" del fitxer csv en la línia d'ordres
             file = in.nextLine();
 
-            //Si el fitxer passat és CSV, guardarem les dades en el BufferReader
             if (file.endsWith(".csv")){
 
                 ASALogLoader asa = new ASALogLoader();
                 asa.load(new File(file));
                 asa.ShowList();
 
-            } else if (file.equals("0")){
-
-                //Si volem sortir de l'aplicació, indicant un 0 en el fitxer, se'ns sortirà de la terminal
-                Runtime.getRuntime().exec("taskkill /f /im cmd.exe");
-
             } else {
 
-                //Si el fitxer no és l'indicat, fitxer serà null, i tornarà a demanar un fitxer
                 System.out.println("Fitxer no compatible. Torna a intentar-ho");
                 file = null;
 
